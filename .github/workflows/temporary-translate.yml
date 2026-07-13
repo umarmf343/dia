@@ -13,8 +13,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install model tools
-        run: pip install --disable-pip-version-check transformers sentencepiece ctranslate2 huggingface_hub
+      - name: Install model downloader
+        run: pip install --disable-pip-version-check huggingface_hub
       - name: Download NLLB model
         run: |
           python - <<'PY'
@@ -25,18 +25,32 @@ jobs:
               allow_patterns=['*.json','*.safetensors','*.bin','*.model','*.spm','*.txt','tokenizer*'],
           )
           PY
-      - name: Convert and quantize model
+      - name: Package and split model
         run: |
-          ct2-transformers-converter --model nllb-source --output_dir nllb-ct2-int8 --quantization int8 --force
-          cp nllb-source/tokenizer_config.json nllb-ct2-int8/ || true
-          cp nllb-source/sentencepiece.bpe.model nllb-ct2-int8/ || true
-          cp nllb-source/tokenizer.json nllb-ct2-int8/ || true
-          cp nllb-source/special_tokens_map.json nllb-ct2-int8/ || true
-          cp nllb-source/config.json nllb-ct2-int8/hf_config.json || true
-          du -sh nllb-ct2-int8
-      - name: Upload quantized model
+          tar -czf nllb-model.tar.gz nllb-source
+          split -b 340M nllb-model.tar.gz nllb-part-
+          ls -lh nllb-part-*
+      - name: Upload part aa
         uses: actions/upload-artifact@v4
         with:
-          name: nllb-ct2-int8
-          path: nllb-ct2-int8
+          name: nllb-part-aa
+          path: nllb-part-aa
+          retention-days: 1
+      - name: Upload part ab
+        uses: actions/upload-artifact@v4
+        with:
+          name: nllb-part-ab
+          path: nllb-part-ab
+          retention-days: 1
+      - name: Upload part ac
+        uses: actions/upload-artifact@v4
+        with:
+          name: nllb-part-ac
+          path: nllb-part-ac
+          retention-days: 1
+      - name: Upload part ad
+        uses: actions/upload-artifact@v4
+        with:
+          name: nllb-part-ad
+          path: nllb-part-ad
           retention-days: 1
