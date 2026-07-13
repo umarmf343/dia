@@ -1,25 +1,35 @@
-name: Temporary English German Translation
+name: Temporary Argos Model Export
 
 on:
   pull_request:
     branches: [main]
 
 jobs:
-  translate:
+  export-model:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install translator
+      - name: Install Argos Translate
         run: pip install --disable-pip-version-check argostranslate
-      - name: Translate manuscript segments
-        run: python translation_job.py
-      - name: Upload translation map
+      - name: Download English to German model
+        run: |
+          python - <<'PY'
+          import shutil
+          import argostranslate.package
+          argostranslate.package.update_package_index()
+          packages = argostranslate.package.get_available_packages()
+          package = next(p for p in packages if p.from_code == 'en' and p.to_code == 'de')
+          path = package.download()
+          shutil.copyfile(path, 'translate-en_de.argosmodel')
+          print(path)
+          PY
+      - name: Upload model
         uses: actions/upload-artifact@v4
         with:
-          name: german-translation-map
-          path: translation_output.json
+          name: argos-en-de-model
+          path: translate-en_de.argosmodel
           retention-days: 1
