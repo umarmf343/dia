@@ -1,4 +1,4 @@
-name: Temporary Argos Model Export
+name: Temporary German Translation Model Export
 
 on:
   pull_request:
@@ -7,29 +7,27 @@ on:
 jobs:
   export-model:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install Argos Translate
-        run: pip install --disable-pip-version-check argostranslate
+      - name: Install model tools
+        run: pip install --disable-pip-version-check transformers sentencepiece sacremoses huggingface_hub
       - name: Download English to German model
         run: |
           python - <<'PY'
-          import shutil
-          import argostranslate.package
-          argostranslate.package.update_package_index()
-          packages = argostranslate.package.get_available_packages()
-          package = next(p for p in packages if p.from_code == 'en' and p.to_code == 'de')
-          path = package.download()
-          shutil.copyfile(path, 'translate-en_de.argosmodel')
-          print(path)
+          from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+          model_id='Helsinki-NLP/opus-mt-en-de'
+          tok=AutoTokenizer.from_pretrained(model_id)
+          model=AutoModelForSeq2SeqLM.from_pretrained(model_id)
+          tok.save_pretrained('hf-en-de-model')
+          model.save_pretrained('hf-en-de-model', safe_serialization=True)
           PY
       - name: Upload model
         uses: actions/upload-artifact@v4
         with:
-          name: argos-en-de-model
-          path: translate-en_de.argosmodel
+          name: hf-en-de-model
+          path: hf-en-de-model
           retention-days: 1
