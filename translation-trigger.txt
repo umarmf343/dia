@@ -1,1 +1,1 @@
-Temporary trigger for the stronger German translation model export.
+Temporary trigger for the NLLB German translation model export.
