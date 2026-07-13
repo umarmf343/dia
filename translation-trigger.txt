@@ -1,0 +1,1 @@
+Temporary trigger for the uncompressed segmented NLLB German model export.
