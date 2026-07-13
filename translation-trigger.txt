@@ -1,1 +1,1 @@
-Temporary trigger for the split NLLB German translation model export.
+Temporary trigger for the uncompressed segmented NLLB German model export.
