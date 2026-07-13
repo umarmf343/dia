@@ -1,0 +1,1 @@
+Temporary trigger for German manuscript translation model export.
