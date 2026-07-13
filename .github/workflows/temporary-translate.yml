@@ -7,27 +7,36 @@ on:
 jobs:
   export-model:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - name: Install model tools
-        run: pip install --disable-pip-version-check huggingface_hub
-      - name: Download NLLB English to German model files
+        run: pip install --disable-pip-version-check transformers sentencepiece ctranslate2 huggingface_hub
+      - name: Download NLLB model
         run: |
           python - <<'PY'
           from huggingface_hub import snapshot_download
           snapshot_download(
               repo_id='facebook/nllb-200-distilled-600M',
-              local_dir='nllb-en-de-model',
+              local_dir='nllb-source',
               allow_patterns=['*.json','*.safetensors','*.bin','*.model','*.spm','*.txt','tokenizer*'],
           )
           PY
-      - name: Upload model
+      - name: Convert and quantize model
+        run: |
+          ct2-transformers-converter --model nllb-source --output_dir nllb-ct2-int8 --quantization int8 --force
+          cp nllb-source/tokenizer_config.json nllb-ct2-int8/ || true
+          cp nllb-source/sentencepiece.bpe.model nllb-ct2-int8/ || true
+          cp nllb-source/tokenizer.json nllb-ct2-int8/ || true
+          cp nllb-source/special_tokens_map.json nllb-ct2-int8/ || true
+          cp nllb-source/config.json nllb-ct2-int8/hf_config.json || true
+          du -sh nllb-ct2-int8
+      - name: Upload quantized model
         uses: actions/upload-artifact@v4
         with:
-          name: nllb-en-de-model
-          path: nllb-en-de-model
+          name: nllb-ct2-int8
+          path: nllb-ct2-int8
           retention-days: 1
