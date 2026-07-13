@@ -1,1 +1,1 @@
-Temporary trigger for German manuscript translation model export.
+Temporary trigger for the second German translation model export.
