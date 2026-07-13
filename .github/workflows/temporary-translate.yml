@@ -25,32 +25,38 @@ jobs:
               allow_patterns=['*.json','*.safetensors','*.bin','*.model','*.spm','*.txt','tokenizer*'],
           )
           PY
-      - name: Package and split model
+      - name: Package and split model without compression
         run: |
-          tar -czf nllb-model.tar.gz nllb-source
-          split -b 340M nllb-model.tar.gz nllb-part-
-          ls -lh nllb-part-*
-      - name: Upload part aa
+          tar -cf nllb-model.tar nllb-source
+          split -b 250M nllb-model.tar nllb-raw-part-
+          ls -lh nllb-raw-part-*
+      - name: Upload aa
         uses: actions/upload-artifact@v4
-        with:
-          name: nllb-part-aa
-          path: nllb-part-aa
-          retention-days: 1
-      - name: Upload part ab
+        with: {name: nllb-raw-aa, path: nllb-raw-part-aa, retention-days: 1}
+      - name: Upload ab
         uses: actions/upload-artifact@v4
-        with:
-          name: nllb-part-ab
-          path: nllb-part-ab
-          retention-days: 1
-      - name: Upload part ac
+        with: {name: nllb-raw-ab, path: nllb-raw-part-ab, retention-days: 1}
+      - name: Upload ac
         uses: actions/upload-artifact@v4
-        with:
-          name: nllb-part-ac
-          path: nllb-part-ac
-          retention-days: 1
-      - name: Upload part ad
+        with: {name: nllb-raw-ac, path: nllb-raw-part-ac, retention-days: 1}
+      - name: Upload ad
         uses: actions/upload-artifact@v4
-        with:
-          name: nllb-part-ad
-          path: nllb-part-ad
-          retention-days: 1
+        with: {name: nllb-raw-ad, path: nllb-raw-part-ad, retention-days: 1}
+      - name: Upload ae
+        uses: actions/upload-artifact@v4
+        with: {name: nllb-raw-ae, path: nllb-raw-part-ae, retention-days: 1}
+      - name: Upload af
+        uses: actions/upload-artifact@v4
+        with: {name: nllb-raw-af, path: nllb-raw-part-af, retention-days: 1}
+      - name: Upload ag
+        uses: actions/upload-artifact@v4
+        with: {name: nllb-raw-ag, path: nllb-raw-part-ag, retention-days: 1}
+      - name: Upload ah
+        uses: actions/upload-artifact@v4
+        with: {name: nllb-raw-ah, path: nllb-raw-part-ah, retention-days: 1}
+      - name: Upload ai
+        uses: actions/upload-artifact@v4
+        with: {name: nllb-raw-ai, path: nllb-raw-part-ai, retention-days: 1}
+      - name: Upload aj
+        uses: actions/upload-artifact@v4
+        with: {name: nllb-raw-aj, path: nllb-raw-part-aj, retention-days: 1}
