@@ -1,0 +1,25 @@
+name: Temporary English German Translation
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install translator
+        run: pip install --disable-pip-version-check argostranslate
+      - name: Translate manuscript segments
+        run: python translation_job.py
+      - name: Upload translation map
+        uses: actions/upload-artifact@v4
+        with:
+          name: german-translation-map
+          path: translation_output.json
+          retention-days: 1
