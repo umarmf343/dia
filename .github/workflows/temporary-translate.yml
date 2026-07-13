@@ -7,7 +7,7 @@ on:
 jobs:
   export-model:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -15,19 +15,19 @@ jobs:
           python-version: '3.11'
       - name: Install model tools
         run: pip install --disable-pip-version-check huggingface_hub
-      - name: Download English to German model files
+      - name: Download stronger English to German model files
         run: |
           python - <<'PY'
           from huggingface_hub import snapshot_download
           snapshot_download(
-              repo_id='Helsinki-NLP/opus-mt-en-de',
-              local_dir='hf-en-de-model',
+              repo_id='Helsinki-NLP/opus-mt-tc-big-en-de',
+              local_dir='hf-en-de-big-model',
               allow_patterns=['*.json','*.safetensors','*.bin','*.model','*.spm','*.txt'],
           )
           PY
       - name: Upload model
         uses: actions/upload-artifact@v4
         with:
-          name: hf-en-de-model
-          path: hf-en-de-model
+          name: hf-en-de-big-model
+          path: hf-en-de-big-model
           retention-days: 1
